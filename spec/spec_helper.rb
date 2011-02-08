@@ -1,0 +1,1 @@
+require File.expand_path("../../lib/lumberjack_syslog_device.rb", __FILE__)

@@ -1,0 +1,13 @@
+Lumberjack Syslog Device
+
+This gem provides a logging device for the lumberjack gem that will log to syslog:http://en.wikipedia.org/wiki/Syslog.
+
+== Example Usage
+
+  require 'lumberjack_syslog_device'
+  
+  device = Lumberjack::SyslogDevice.new
+  logger = Lumberjack::Logger.new(device)
+  logger.info("Write me to syslog!")
+
+See SyslogDevice for more details.
