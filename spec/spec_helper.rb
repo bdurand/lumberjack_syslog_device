@@ -15,6 +15,7 @@ def read_syslog(progname = "lumberjack_syslog_device_spec")
     syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
     syslog.warning("************** end #{message_id}")
   end
+  sleep(0.5)
   lines = `tail -200 #{SYSLOG_FILE}`.split("\n")
   retval = nil
   lines.each do |line|
