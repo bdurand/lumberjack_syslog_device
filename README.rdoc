@@ -1,6 +1,6 @@
 Lumberjack Syslog Device
 
-This gem provides a logging device for the lumberjack gem that will log to syslog:http://en.wikipedia.org/wiki/Syslog.
+This gem provides a logging device for the lumberjack gem that will log to syslog, the centralized system logging facility. See http://en.wikipedia.org/wiki/Syslog for more information on syslog.
 
 == Example Usage
 
