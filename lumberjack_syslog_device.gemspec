@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8", "--main", "README.rdoc"]
   s.extra_rdoc_files = ["README.rdoc"]
   
-  s.add_dependency "lumberjack"
+  s.add_dependency "lumberjack", "~>1.0"
 end
