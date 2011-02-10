@@ -18,20 +18,23 @@ def read_syslog(progname = "lumberjack_syslog_device_spec")
     syslog.warning("************** end #{message_id}")
   end
   
-  sleep(0.25)
-  lines = `tail -200 #{SYSLOG_FILE}`.split("\n")
-  
-  retval = nil
-  lines.each do |line|
-    if line.include?("start #{message_id}")
-      retval = []
-    elsif line.include?("end #{message_id}")
-      break
-    else
-      retval << line if retval && line.include?(progname)
+  # Loop over the syslog file until the start and end markers are found
+  8.times do
+    retval = nil
+    lines = `tail -500 #{SYSLOG_FILE}`.split("\n")
+    lines.each do |line|
+      if line.include?("start #{message_id}")
+        retval = []
+      elsif line.include?("end #{message_id}")
+        return retval
+      else
+        retval << line if retval && line.include?(progname)
+      end
     end
+    break if retval
+    sleep(0.25)
   end
-  retval
+  raise "could not find message logged to #{SYSLOG_FILE}"
 end
 
 class MockSyslog
