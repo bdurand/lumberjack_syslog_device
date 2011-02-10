@@ -63,12 +63,13 @@ describe Lumberjack::SyslogDevice do
       messages.first.should include("MESSAGE 1")
     end
   
-    it "should escape percent signs in the syslog message" do
+    it "should properly handle percent signs in the syslog message" do
       device = Lumberjack::SyslogDevice.new
+      entry.message = "message 100%"
       messages = read_syslog do
         device.write(entry)
       end
-      messages.first.should include("message 1 (#ABCD)")
+      messages.first.should include("message 100% (#ABCD)")
     end
   
     it "should convert lumberjack severities to syslog severities" do
