@@ -9,14 +9,18 @@ def read_syslog(progname = "lumberjack_syslog_device_spec")
     syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
     syslog.warning("************** start #{message_id}")
   end
+  
   yield
+  
   Syslog.close if Syslog.opened?
   Syslog.open("lumberjack_syslog_device_spec") do |syslog|
     syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
     syslog.warning("************** end #{message_id}")
   end
-  sleep(0.5)
+  
+  sleep(0.25)
   lines = `tail -200 #{SYSLOG_FILE}`.split("\n")
+  
   retval = nil
   lines.each do |line|
     if line.include?("start #{message_id}")
