@@ -62,7 +62,7 @@ module Lumberjack
       @template = options[:template] || lambda{|entry| entry.unit_of_work_id ? "#{entry.message} (##{entry.unit_of_work_id})" : entry.message}
       @template = Template.new(@template) if @template.is_a?(String)
       @syslog_options = options[:options] || (Syslog::LOG_PID | Syslog::LOG_CONS)
-      @syslog_facility = options[:facility])
+      @syslog_facility = options[:facility]
       @close_connection = options[:close_connection]
       @syslog_identity = nil
     end
