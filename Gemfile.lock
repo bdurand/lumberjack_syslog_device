@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:bdurand/lumberjack.git
+  remote: https://github.com/bdurand/lumberjack.git
   revision: 1c92598df0422e176bdc06cbddf88481e9847dc2
   ref: 1c92598df0422e176bdc06cbddf88481e9847dc2
   specs:
