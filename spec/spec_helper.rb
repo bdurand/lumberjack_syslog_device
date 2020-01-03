@@ -9,15 +9,15 @@ def read_syslog(progname = "lumberjack_syslog_device_spec")
     syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
     syslog.warning("************** start #{message_id}")
   end
-  
+
   yield
-  
+
   Syslog.close if Syslog.opened?
   Syslog.open("lumberjack_syslog_device_spec") do |syslog|
     syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
     syslog.warning("************** end #{message_id}")
   end
-  
+
   # Loop over the syslog file until the start and end markers are found
   8.times do
     retval = nil

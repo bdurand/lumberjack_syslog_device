@@ -17,12 +17,12 @@ module Lumberjack
       Severity::FATAL => Syslog::LOG_CRIT,
       Severity::UNKNOWN => Syslog::LOG_ALERT
     }
-    
+
     PERCENT = '%'
     ESCAPED_PERCENT = '%%'
-    
+
     @@lock = Mutex.new
-    
+
     # Create a new SyslogDevice. The options control how messages are written to syslog.
     #
     # The template can be specified using the :template option. This can
@@ -62,11 +62,11 @@ module Lumberjack
       @template = options[:template] || lambda{|entry| entry.unit_of_work_id ? "#{entry.message} (##{entry.unit_of_work_id})" : entry.message}
       @template = Template.new(@template) if @template.is_a?(String)
       @syslog_options = options[:options] || (Syslog::LOG_PID | Syslog::LOG_CONS)
-      @syslog_facility = options[:facility]
+      @syslog_facility = options[:facility])
       @close_connection = options[:close_connection]
       @syslog_identity = nil
     end
-    
+
     def write(entry)
       message = @template.call(entry).gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
@@ -78,24 +78,25 @@ module Lumberjack
         end
       end
     end
-    
+
     def close
       flush
       @lock.synchronize do
         @syslog.close if @syslog && @syslog.opened?
       end
     end
-    
+
     private
-    
+
     # Open syslog with ident set to progname. If it is already open with a different
     # ident, close it and reopen it.
     def open_syslog(progname) #:nodoc:
       if Syslog.opened?
         if (progname.nil? || Syslog.ident == progname) && @syslog_facility == Syslog.facility && @syslog_options == Syslog.options
           return Syslog
+        else
+          Syslog.close
         end
-        Syslog.close
       end
       syslog = Syslog.open(progname, @syslog_options, @syslog_facility)
       syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
