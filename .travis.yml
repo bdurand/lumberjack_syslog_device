@@ -5,6 +5,3 @@ rvm:
 
 gemfile:
   - Gemfile
-
-env:
-  SYSLOG_FILE: /var/log/syslog

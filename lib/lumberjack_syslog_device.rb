@@ -59,7 +59,7 @@ module Lumberjack
     # * Syslog::LOG_USER (default)
     # * Syslog::LOG_UUCP
     def initialize(options = {})
-      @template = options[:template] || lambda{|entry| entry.unit_of_work_id ? "#{entry.message} (##{entry.unit_of_work_id})" : entry.message}
+      @template = options[:template] || default_template
       @template = Template.new(@template) if @template.is_a?(String)
       @syslog_options = options[:options] || (Syslog::LOG_PID | Syslog::LOG_CONS)
       @syslog_facility = options[:facility]
@@ -91,16 +91,38 @@ module Lumberjack
     # Open syslog with ident set to progname. If it is already open with a different
     # ident, close it and reopen it.
     def open_syslog(progname) #:nodoc:
-      if Syslog.opened?
-        if (progname.nil? || Syslog.ident == progname) && @syslog_facility == Syslog.facility && @syslog_options == Syslog.options
-          return Syslog
+      syslog_impl = syslog_implementation
+      if syslog_impl.opened?
+        if (progname.nil? || syslog_impl.ident == progname) && @syslog_facility == syslog_impl.facility && @syslog_options == syslog_impl.options
+          return syslog_impl
         else
-          Syslog.close
+          syslog_impl.close
         end
       end
-      syslog = Syslog.open(progname, @syslog_options, @syslog_facility)
+      syslog = syslog_impl.open(progname, @syslog_options, @syslog_facility)
       syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
       syslog
+    end
+
+    # Provided for testing purposes
+    def syslog_implementation #:nodoc:
+      Syslog
+    end
+
+    def default_template
+      lambda do |entry|
+        tags = entry.tags
+        if tags && !tags.empty?
+          message = String.new(entry.message)
+          message << " (#{entry.unit_of_work_id})" if entry.unit_of_work_id
+          tags.each do |name, value|
+            message << " [#{name}:#{value.inspect}]" unless name == Lumberjack::LogEntry::UNIT_OF_WORK_ID
+          end
+          message
+        else
+          entry.message
+        end
+      end
     end
   end
 end
