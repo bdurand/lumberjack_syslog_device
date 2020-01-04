@@ -3,7 +3,7 @@ Gem::Specification.new do |spec|
   spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   spec.authors = ['Brian Durand']
   spec.email = ['bbdurand@gmail.com']
-  
+
   spec.summary = "A logging device for the lumberjack gem that writes log entries to syslog."
   spec.homepage = "https://github.com/bdurand/lumberjack_syslog_device"
   spec.license = "MIT"
@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ['lib']
 
-  # spec.add_dependency "lumberjack", ">=2.0"
+  spec.add_dependency "lumberjack", ">=2.0"
 
   spec.add_development_dependency("rspec", ["~> 3.0"])
   spec.add_development_dependency "rake"
