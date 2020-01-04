@@ -1,4 +1,4 @@
-require File.expand_path("../../lib/lumberjack_syslog_device.rb", __FILE__)
+require_relative "../lib/lumberjack_syslog_device.rb"
 
 # Mock object for testing Syslog since it's not available on many systems.
 class MockSyslog
