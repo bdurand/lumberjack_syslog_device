@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lumberjack_syslog_device (2.0.0)
+    lumberjack_syslog_device (1.1.0)
       lumberjack (>= 1.1)
 
 GEM
