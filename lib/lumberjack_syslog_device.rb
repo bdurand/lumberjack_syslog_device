@@ -68,7 +68,10 @@ module Lumberjack
     end
 
     def write(entry)
-      message = @template.call(entry).gsub(PERCENT, ESCAPED_PERCENT)
+      message = @template.call(entry)
+      messsage = message.is_a?(Hash) ? 'HASH!!! ' + message.to_s : message
+
+      message = message.gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
         syslog = open_syslog(entry.progname)
         begin
