@@ -68,14 +68,10 @@ module Lumberjack
     end
 
     def write(entry)
-      message = @template.call(entry)
-      messsage = message.is_a?(Hash) ? 'HASH!!! ' + message.to_s : message
-
-      message = message.gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
         syslog = open_syslog(entry.progname)
         begin
-          syslog.log(SEVERITY_MAP[entry.severity], message)
+          syslog.log(SEVERITY_MAP[entry.severity], _message(entry))
         ensure
           syslog.close if @close_connection
         end
@@ -90,6 +86,12 @@ module Lumberjack
     end
 
     private
+
+    def _message(entry)
+      res = @template.call(entry)
+      res = res.is_a?(Hash) ? 'HASH detected!!! ' + res.to_s : res
+      res.gsub(PERCENT, ESCAPED_PERCENT)
+    end
 
     # Open syslog with ident set to progname. If it is already open with a different
     # ident, close it and reopen it.

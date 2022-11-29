@@ -94,6 +94,19 @@ describe Lumberjack::SyslogDevice do
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:"bar"]']]
     end
 
+    class Template
+      def call(e)
+        e.message
+      end
+    end
+    it "should properly handle Hash" do
+      device = Lumberjack::SyslogDevice.new(template: Template.new)
+      entry.message = {}
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(entry)
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, "HASH detected!!! #{entry.message}"]]
+    end
+
     it "should convert lumberjack severities to syslog severities" do
       syslog = MockSyslog.new
       device = Lumberjack::SyslogDevice.new
