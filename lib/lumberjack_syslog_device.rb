@@ -58,6 +58,7 @@ module Lumberjack
     # * Syslog::LOG_SYSLOG
     # * Syslog::LOG_USER (default)
     # * Syslog::LOG_UUCP
+
     def initialize(options = {})
       @template = options[:template] || default_template
       @template = Template.new(@template) if @template.is_a?(String)
