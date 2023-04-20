@@ -105,7 +105,7 @@ module Lumberjack
           syslog_impl.close
         end
       end
-      syslog = syslog_impl.open(progname, @syslog_options, @syslog_facility)
+      syslog = syslog_impl.open(progname.to_s, @syslog_options, @syslog_facility)
       syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
       syslog
     end
