@@ -1,5 +1,13 @@
-pkg
-tmp
-rdoc
-*.rbc
 .tm_properties
+.bundle
+/gemfiles/*.lock
+.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+.DS_Store
+Gemfile.lock
+.ruby-version

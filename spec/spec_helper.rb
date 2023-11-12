@@ -1,8 +1,7 @@
-require_relative "../lib/lumberjack_syslog_device.rb"
+require_relative "../lib/lumberjack_syslog_device"
 
 # Mock object for testing Syslog since it's not available on many systems.
 class MockSyslog
-
   attr_reader :ident, :options, :facility, :mask, :output
 
   def initialize
@@ -22,9 +21,7 @@ class MockSyslog
     @opened
   end
 
-  def mask=(value)
-    @mask = value
-  end
+  attr_writer :mask
 
   def log(severity, message)
     @output << [severity, message]

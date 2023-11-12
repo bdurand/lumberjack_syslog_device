@@ -1,0 +1,47 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+      - actions-*
+    tags:
+      - v*
+  pull_request:
+    branches-ignore:
+      - actions-*
+
+env:
+  BUNDLE_CLEAN: "true"
+  BUNDLE_PATH: vendor/bundle
+  BUNDLE_JOBS: 3
+  BUNDLE_RETRY: 3
+
+jobs:
+  build:
+    name: ${{ matrix.ruby }} build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - ruby: "ruby"
+            standardrb: true
+          - ruby: "3.0"
+          - ruby: "2.7"
+          - ruby: "2.6"
+          - ruby: "2.5"
+          - ruby: "2.4"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby}}
+    - name: Install gems
+      run: |
+        bundle install
+    - name: Run Tests
+      run: bundle exec rake
+    - name: standardrb
+      if: matrix.standardrb
+      run:  bundle exec standardrb

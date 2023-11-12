@@ -1,7 +1,6 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Lumberjack::SyslogDevice do
-
   let(:syslog) { MockSyslog.new }
   let(:time) { Time.parse("2011-02-01T18:32:31Z") }
   let(:entry) { Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 1", "lumberjack_syslog_device_spec", 12345, "foo" => "bar") }
@@ -15,14 +14,14 @@ describe Lumberjack::SyslogDevice do
     end
 
     it "should be able to specify syslog options" do
-      device = Lumberjack::SyslogDevice.new(:options => Syslog::LOG_CONS)
+      device = Lumberjack::SyslogDevice.new(options: Syslog::LOG_CONS)
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.options).to eq Syslog::LOG_CONS
     end
 
     it "should be able to specify a syslog facility" do
-      device = Lumberjack::SyslogDevice.new(:facility => Syslog::LOG_FTP)
+      device = Lumberjack::SyslogDevice.new(facility: Syslog::LOG_FTP)
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.facility).to eq Syslog::LOG_FTP
@@ -42,7 +41,7 @@ describe Lumberjack::SyslogDevice do
     end
 
     it "should close the syslog connection if :close_connection is true" do
-      device = Lumberjack::SyslogDevice.new(:close_connection => true)
+      device = Lumberjack::SyslogDevice.new(close_connection: true)
       device.write(entry)
       expect(Syslog).not_to be_opened
     end
@@ -73,14 +72,14 @@ describe Lumberjack::SyslogDevice do
     end
 
     it "should be able to specify a string template" do
-      device = Lumberjack::SyslogDevice.new(:template => ":foo - :message")
+      device = Lumberjack::SyslogDevice.new(template: ":foo - :message")
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, "bar - message 1"]]
     end
 
     it "should be able to specify a proc template" do
-      device = Lumberjack::SyslogDevice.new(:template => lambda{|e| e.message.upcase})
+      device = Lumberjack::SyslogDevice.new(template: lambda { |e| e.message.upcase })
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, "MESSAGE 1"]]

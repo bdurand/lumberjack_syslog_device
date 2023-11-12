@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'syslog'
-require 'lumberjack'
+require "syslog"
+require "lumberjack"
 
 module Lumberjack
   # This Lumberjack device logs output to syslog. There can only be one connection to syslog
@@ -18,8 +18,8 @@ module Lumberjack
       Severity::UNKNOWN => Syslog::LOG_ALERT
     }
 
-    PERCENT = '%'
-    ESCAPED_PERCENT = '%%'
+    PERCENT = "%"
+    ESCAPED_PERCENT = "%%"
 
     @@lock = Mutex.new
 
@@ -82,7 +82,7 @@ module Lumberjack
     def close
       flush
       @lock.synchronize do
-        @syslog.close if @syslog && @syslog.opened?
+        @syslog.close if @syslog&.opened?
       end
     end
 
@@ -90,7 +90,7 @@ module Lumberjack
 
     # Open syslog with ident set to progname. If it is already open with a different
     # ident, close it and reopen it.
-    def open_syslog(progname) #:nodoc:
+    def open_syslog(progname) # :nodoc:
       syslog_impl = syslog_implementation
       if syslog_impl.opened?
         if (progname.nil? || syslog_impl.ident == progname) && @syslog_facility == syslog_impl.facility && @syslog_options == syslog_impl.options
@@ -105,7 +105,7 @@ module Lumberjack
     end
 
     # Provided for testing purposes
-    def syslog_implementation #:nodoc:
+    def syslog_implementation # :nodoc:
       Syslog
     end
 
