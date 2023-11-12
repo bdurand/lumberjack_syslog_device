@@ -93,6 +93,15 @@ describe Lumberjack::SyslogDevice do
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:"bar"]']]
     end
 
+    it "should convert template output to strings" do
+      device = Lumberjack::SyslogDevice.new(template: lambda { |e| e.message })
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      message = {foo: "bar"}
+      entry = Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, message, "lumberjack_syslog_device_spec", 12345, {})
+      device.write(entry)
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, message.to_s]]
+  end
+
     it "should convert lumberjack severities to syslog severities" do
       syslog = MockSyslog.new
       device = Lumberjack::SyslogDevice.new

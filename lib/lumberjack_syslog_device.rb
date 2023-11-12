@@ -68,7 +68,7 @@ module Lumberjack
     end
 
     def write(entry)
-      message = @template.call(entry).gsub(PERCENT, ESCAPED_PERCENT)
+      message = @template.call(entry).to_s.gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
         syslog = open_syslog(entry.progname)
         begin
@@ -93,13 +93,13 @@ module Lumberjack
     def open_syslog(progname) # :nodoc:
       syslog_impl = syslog_implementation
       if syslog_impl.opened?
-        if (progname.nil? || syslog_impl.ident == progname) && @syslog_facility == syslog_impl.facility && @syslog_options == syslog_impl.options
+        if (progname.nil? || syslog_impl.ident == progname.to_s) && @syslog_facility == syslog_impl.facility && @syslog_options == syslog_impl.options
           return syslog_impl
         else
           syslog_impl.close
         end
       end
-      syslog = syslog_impl.open(progname, @syslog_options, @syslog_facility)
+      syslog = syslog_impl.open(progname.to_s, @syslog_options, @syslog_facility)
       syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
       syslog
     end
