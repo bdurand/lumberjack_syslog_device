@@ -1,5 +1,7 @@
 # Lumberjack Syslog Device
 
+[![Continuous Integration](https://github.com/bdurand/lumberjack_syslog_device/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/lumberjack_syslog_device/actions/workflows/continuous_integration.yml)
+[![Regression Test](https://github.com/bdurand/lumberjack_syslog_device/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/lumberjack_syslog_device/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a logging device for the [lumberjack](https://github.com/bdurand/lumberjack) gem that will log to syslog, the centralized system logging facility. See http://en.wikipedia.org/wiki/Syslog for more information on syslog.
