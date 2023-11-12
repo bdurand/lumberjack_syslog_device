@@ -1,11 +1,10 @@
 # Lumberjack Syslog Device
 
-[![Build Status](https://travis-ci.org/bdurand/lumberjack_syslog_device.svg?branch=master)](https://travis-ci.org/bdurand/lumberjack_syslog_device)
-[![Maintainability](https://api.codeclimate.com/v1/badges/61785ec7e33012f55d65/maintainability)](https://codeclimate.com/github/bdurand/lumberjack_syslog_device/maintainability)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a logging device for the [lumberjack](https://github.com/bdurand/lumberjack) gem that will log to syslog, the centralized system logging facility. See http://en.wikipedia.org/wiki/Syslog for more information on syslog.
 
-## Example Usage
+## Usage
 
 ```ruby
 require 'lumberjack_syslog_device'
@@ -15,4 +14,32 @@ logger = Lumberjack::Logger.new(device)
 logger.info("Write me to syslog!")
 ```
 
-See SyslogDevice for more details.
+See the docs in the Lumberjack::SyslogDevice file for more details.
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'lumberjack_syslog_device'
+```
+
+And then execute:
+```bash
+$ bundle
+```
+
+Or install it yourself as:
+```bash
+$ gem install lumberjack_syslog_device
+```
+
+## Contributing
+
+Open a pull request on GitHub.
+
+Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
