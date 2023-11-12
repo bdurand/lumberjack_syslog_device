@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Always cast values to strings before logging to syslog.
+- Always cast values to strings before logging to syslog (thanks @eremeyev).
 
 ## 1.1.0
 
