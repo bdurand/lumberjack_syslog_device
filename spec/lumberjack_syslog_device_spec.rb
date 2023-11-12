@@ -100,7 +100,7 @@ describe Lumberjack::SyslogDevice do
       entry = Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, message, "lumberjack_syslog_device_spec", 12345, {})
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, message.to_s]]
-  end
+    end
 
     it "should convert lumberjack severities to syslog severities" do
       syslog = MockSyslog.new
