@@ -60,15 +60,7 @@ describe Lumberjack::SyslogDevice do
       device = Lumberjack::SyslogDevice.new
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 [foo:"bar"]']]
-    end
-
-    it "should log output with a unit of work id in the default template" do
-      entry.unit_of_work_id = "ABCD"
-      device = Lumberjack::SyslogDevice.new
-      allow(device).to receive(:syslog_implementation).and_return(syslog)
-      device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 (ABCD) [foo:"bar"]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 [foo:bar]']]
     end
 
     it "should be able to specify a string template" do
@@ -90,7 +82,7 @@ describe Lumberjack::SyslogDevice do
       entry.message = "message 100%"
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:"bar"]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:bar]']]
     end
 
     it "should convert template output to strings" do

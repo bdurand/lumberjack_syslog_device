@@ -10,6 +10,7 @@ module Lumberjack
   # open between +write+ calls.
   class SyslogDevice < Device
     SEVERITY_MAP = {
+      Severity::TRACE => Syslog::LOG_DEBUG,
       Severity::DEBUG => Syslog::LOG_DEBUG,
       Severity::INFO => Syslog::LOG_INFO,
       Severity::WARN => Syslog::LOG_WARNING,
@@ -21,6 +22,9 @@ module Lumberjack
     PERCENT = "%"
     ESCAPED_PERCENT = "%%"
 
+    DEFAULT_TEMPLATE = ":message :attributes"
+    DEFAULT_ATTRIBUTE_FORMAT = "[%s:%s]"
+
     @@lock = Mutex.new
 
     # Create a new SyslogDevice. The options control how messages are written to syslog.
@@ -29,7 +33,7 @@ module Lumberjack
     # either be a Proc or a string that will compile into a Template object.
     # If the template is a Proc, it should accept an LogEntry as its only argument and output a string.
     # If the template is a template string, it will be used to create a Template.
-    # The default template is `:message (#:unit_of_work_id) :tags`.
+    # The default template is `:message :attributes`.
     #
     # The :close_connection option can be used to specify that the connection to syslog should be
     # closed after every +write+ call. This will slow down performance, but will allow you to use syslog
@@ -59,8 +63,10 @@ module Lumberjack
     # * Syslog::LOG_USER (default)
     # * Syslog::LOG_UUCP
     def initialize(options = {})
-      @template = options[:template] || default_template
-      @template = Template.new(@template) if @template.is_a?(String)
+      @template = options[:template] || DEFAULT_TEMPLATE
+      attribute_format = options[:attribute_format] || DEFAULT_ATTRIBUTE_FORMAT
+      @template = Template.new(@template, attribute_format: attribute_format) if @template.is_a?(String)
+
       @syslog_options = options[:options] || (Syslog::LOG_PID | Syslog::LOG_CONS)
       @syslog_facility = options[:facility]
       @close_connection = options[:close_connection]
@@ -68,7 +74,7 @@ module Lumberjack
     end
 
     def write(entry)
-      message = @template.call(entry).to_s.gsub(PERCENT, ESCAPED_PERCENT)
+      message = @template.call(entry).to_s.chomp.gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
         syslog = open_syslog(entry.progname)
         begin
@@ -107,22 +113,6 @@ module Lumberjack
     # Provided for testing purposes
     def syslog_implementation # :nodoc:
       Syslog
-    end
-
-    def default_template
-      lambda do |entry|
-        tags = entry.tags
-        if tags && !tags.empty?
-          message = String.new(entry.message)
-          message << " (#{entry.unit_of_work_id})" if entry.unit_of_work_id
-          tags.each do |name, value|
-            message << " [#{name}:#{value.inspect}]" unless name == Lumberjack::LogEntry::UNIT_OF_WORK_ID
-          end
-          message
-        else
-          entry.message
-        end
-      end
     end
   end
 end
