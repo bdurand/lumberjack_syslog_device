@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add support for lumberjack 2.0 tags.
+- Add support for lumberjack 1.1 tags.
 
 ## 1.0.0
 
