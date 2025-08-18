@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
-describe Lumberjack::SyslogDevice do
+RSpec.describe Lumberjack::SyslogDevice do
   let(:syslog) { MockSyslog.new }
   let(:time) { Time.parse("2011-02-01T18:32:31Z") }
   let(:entry) { Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 1", "lumberjack_syslog_device_spec", 12345, "foo" => "bar") }
@@ -60,7 +62,7 @@ describe Lumberjack::SyslogDevice do
       device = Lumberjack::SyslogDevice.new
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 [foo:bar]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, "message 1 [foo:bar]"]]
     end
 
     it "should be able to specify a string template" do
@@ -82,7 +84,7 @@ describe Lumberjack::SyslogDevice do
       entry.message = "message 100%"
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:bar]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, "message 100%% [foo:bar]"]]
     end
 
     it "should convert template output to strings" do
