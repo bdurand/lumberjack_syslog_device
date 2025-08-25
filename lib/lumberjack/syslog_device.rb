@@ -25,6 +25,8 @@ module Lumberjack
     DEFAULT_TEMPLATE = ":message :attributes"
     DEFAULT_ATTRIBUTE_FORMAT = "[%s:%s]"
 
+    DeviceRegistry.add(:syslog, self)
+
     @@lock = Mutex.new
 
     # Create a new SyslogDevice. The options control how messages are written to syslog.
