@@ -3,12 +3,15 @@
 require "syslog"
 require "lumberjack"
 
+# Lumberjack is a simple, powerful, and very fast logging utility that can be a drop
+# in replacement for Logger or ActiveSupport::BufferedLogger.
 module Lumberjack
   # This Lumberjack device logs output to syslog. There can only be one connection to syslog
   # open at a time. If you use syslog elsewhere in your application, you'll need to pass
   # :close_connection => true to the constructor. Otherwise, the connection will be kept
   # open between +write+ calls.
   class SyslogDevice < Device
+    # Mapping of Lumberjack severity levels to syslog priority levels
     SEVERITY_MAP = {
       Severity::TRACE => Syslog::LOG_DEBUG,
       Severity::DEBUG => Syslog::LOG_DEBUG,
@@ -19,10 +22,14 @@ module Lumberjack
       Severity::UNKNOWN => Syslog::LOG_ALERT
     }
 
+    # Literal percent character
     PERCENT = "%"
+    # Escaped percent character for syslog format strings
     ESCAPED_PERCENT = "%%"
 
+    # Default template for formatting log messages
     DEFAULT_TEMPLATE = ":message :attributes"
+    # Default format for rendering log entry attributes
     DEFAULT_ATTRIBUTE_FORMAT = "[%s:%s]"
 
     DeviceRegistry.add(:syslog, self)
@@ -75,6 +82,10 @@ module Lumberjack
       @syslog_identity = nil
     end
 
+    # Write a log entry to syslog.
+    #
+    # @param entry [Lumberjack::LogEntry] the log entry to write
+    # @return [void]
     def write(entry)
       message = @template.call(entry).to_s.chomp.gsub(PERCENT, ESCAPED_PERCENT)
       @@lock.synchronize do
@@ -87,6 +98,9 @@ module Lumberjack
       end
     end
 
+    # Close the syslog connection.
+    #
+    # @return [void]
     def close
       flush
       @lock.synchronize do
