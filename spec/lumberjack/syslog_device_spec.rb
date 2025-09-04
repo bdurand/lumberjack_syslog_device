@@ -72,7 +72,7 @@ RSpec.describe Lumberjack::SyslogDevice do
     end
 
     it "should be able to specify a string template" do
-      device = Lumberjack::SyslogDevice.new(template: ":foo - :message")
+      device = Lumberjack::SyslogDevice.new(template: "{{foo}} - {{message}}")
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, "bar - message 1"]]
