@@ -7,6 +7,12 @@ RSpec.describe Lumberjack::SyslogDevice do
   let(:time) { Time.parse("2011-02-01T18:32:31Z") }
   let(:entry) { Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 1", "lumberjack_syslog_device_spec", 12345, "foo" => "bar") }
 
+  describe "VERSION" do
+    it "has a version number" do
+      expect(Lumberjack::SyslogDevice::VERSION).not_to be nil
+    end
+  end
+
   describe "registry" do
     it "should register the syslog device" do
       expect(Lumberjack::DeviceRegistry.device_class(:syslog)).to eq(Lumberjack::SyslogDevice)

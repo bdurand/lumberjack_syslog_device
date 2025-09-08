@@ -11,6 +11,8 @@ module Lumberjack
   # :close_connection => true to the constructor. Otherwise, the connection will be kept
   # open between +write+ calls.
   class SyslogDevice < Device
+    VERSION = ::File.read(::File.join(__dir__, "..", "..", "VERSION")).strip.freeze
+
     # Mapping of Lumberjack severity levels to syslog priority levels
     SEVERITY_MAP = {
       Severity::TRACE => Syslog::LOG_DEBUG,
