@@ -44,7 +44,7 @@ module Lumberjack
     # either be a Proc or a string that will compile into a Template object.
     # If the template is a Proc, it should accept an LogEntry as its only argument and output a string.
     # If the template is a template string, it will be used to create a Template.
-    # The default template is `{{message}} {{attributes}}`.
+    # The default template is +{{message}} {{attributes}}+.
     #
     # The :close_connection option can be used to specify that the connection to syslog should be
     # closed after every +write+ call. This will slow down performance, but will allow you to use syslog
