@@ -28,7 +28,7 @@ class MockSyslog
   end
 end
 
-Lumberjack.deprecation_mode = "raise"
+Lumberjack.deprecation_mode = :raise
 Lumberjack.raise_logger_errors = true
 
 RSpec.configure do |config|

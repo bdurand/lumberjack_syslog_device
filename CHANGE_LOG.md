@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated default template to `:message :attributes`. Unit of work is no longer supported in Lumberjack 2.
+- Updated default template to `{{message}} {{attributes}}`. Unit of work is no longer supported in Lumberjack 2.
 - Updated attribute formatting to use tag formatting specified in the `:tag_format` option rather than hardcoding the format.
 
 ### Removed
