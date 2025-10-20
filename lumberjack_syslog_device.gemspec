@@ -32,9 +32,10 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">=2.4"
+  spec.required_ruby_version = ">=2.7"
 
-  spec.add_dependency "lumberjack", ">=1.1"
+  spec.add_dependency "lumberjack", ">=2.0"
+  spec.add_dependency "syslog"
 
   spec.add_development_dependency "bundler"
 end

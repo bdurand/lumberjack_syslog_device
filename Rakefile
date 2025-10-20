@@ -4,9 +4,6 @@ rescue LoadError
   puts "You must `gem install bundler` and `bundle install` to run rake tasks"
 end
 
-require "yard"
-YARD::Rake::YardocTask.new(:yard)
-
 require "bundler/gem_tasks"
 
 task :verify_release_branch do
@@ -16,12 +13,10 @@ task :verify_release_branch do
   end
 end
 
-task release: :verify_release_branch
+Rake::Task[:release].enhance([:verify_release_branch])
 
 require "rspec/core/rake_task"
 
 RSpec::Core::RakeTask.new(:spec)
 
 task default: :spec
-
-require "standard/rake"

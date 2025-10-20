@@ -1,9 +1,23 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
-describe Lumberjack::SyslogDevice do
+RSpec.describe Lumberjack::SyslogDevice do
   let(:syslog) { MockSyslog.new }
   let(:time) { Time.parse("2011-02-01T18:32:31Z") }
   let(:entry) { Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 1", "lumberjack_syslog_device_spec", 12345, "foo" => "bar") }
+
+  describe "VERSION" do
+    it "has a version number" do
+      expect(Lumberjack::SyslogDevice::VERSION).not_to be nil
+    end
+  end
+
+  describe "registry" do
+    it "should register the syslog device" do
+      expect(Lumberjack::DeviceRegistry.device_class(:syslog)).to eq(Lumberjack::SyslogDevice)
+    end
+  end
 
   context "open connection" do
     it "should set the identity as the progname" do
@@ -49,30 +63,22 @@ describe Lumberjack::SyslogDevice do
 
   context "logging" do
     it "should log entries to syslog" do
-      entry.tags.clear
+      entry.attributes.clear
       device = Lumberjack::SyslogDevice.new
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, "message 1"]]
     end
 
-    it "should log output to syslog with tags" do
+    it "should log output to syslog with attributes" do
       device = Lumberjack::SyslogDevice.new
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 [foo:"bar"]']]
-    end
-
-    it "should log output with a unit of work id in the default template" do
-      entry.unit_of_work_id = "ABCD"
-      device = Lumberjack::SyslogDevice.new
-      allow(device).to receive(:syslog_implementation).and_return(syslog)
-      device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 1 (ABCD) [foo:"bar"]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, "message 1 [foo:bar]"]]
     end
 
     it "should be able to specify a string template" do
-      device = Lumberjack::SyslogDevice.new(template: ":foo - :message")
+      device = Lumberjack::SyslogDevice.new(template: "{{foo}} - {{message}}")
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
       expect(syslog.output).to eq [[Syslog::LOG_WARNING, "bar - message 1"]]
@@ -90,7 +96,7 @@ describe Lumberjack::SyslogDevice do
       entry.message = "message 100%"
       allow(device).to receive(:syslog_implementation).and_return(syslog)
       device.write(entry)
-      expect(syslog.output).to eq [[Syslog::LOG_WARNING, 'message 100%% [foo:"bar"]']]
+      expect(syslog.output).to eq [[Syslog::LOG_WARNING, "message 100%% [foo:bar]"]]
     end
 
     it "should convert template output to strings" do
