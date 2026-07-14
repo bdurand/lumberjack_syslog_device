@@ -59,6 +59,56 @@ RSpec.describe Lumberjack::SyslogDevice do
       device.write(entry)
       expect(Syslog).not_to be_opened
     end
+
+    it "should reuse the connection across writes with the default facility" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(entry)
+      device.write(entry)
+      expect(syslog.open_count).to eq 1
+    end
+
+    it "should reopen the connection when the progname changes" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(entry)
+      other_entry = Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 2", "other_progname", 12345, nil)
+      device.write(other_entry)
+      expect(syslog.open_count).to eq 2
+      expect(syslog.ident).to eq "other_progname"
+    end
+
+    it "should reuse the connection when the progname is nil" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(entry)
+      device.write(Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 2", nil, 12345, nil))
+      expect(syslog.open_count).to eq 1
+    end
+
+    it "should open the connection with a nil ident when the progname is nil" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(Lumberjack::LogEntry.new(time, Lumberjack::Severity::WARN, "message 1", nil, 12345, nil))
+      expect(syslog.ident).to be_nil
+    end
+  end
+
+  describe "close" do
+    it "should close the syslog connection" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(entry)
+      expect(syslog).to be_opened
+      device.close
+      expect(syslog).not_to be_opened
+    end
+
+    it "should do nothing if the connection is not open" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      expect { device.close }.not_to raise_error
+    end
   end
 
   context "logging" do
@@ -122,6 +172,13 @@ RSpec.describe Lumberjack::SyslogDevice do
       device.write(Lumberjack::LogEntry.new(Time.now, Lumberjack::Severity::WARN, "warn", "lumberjack_syslog_device_spec", 12345, nil))
       device.write(Lumberjack::LogEntry.new(Time.now, Lumberjack::Severity::ERROR, "error", "lumberjack_syslog_device_spec", 12345, nil))
       device.write(Lumberjack::LogEntry.new(Time.now, Lumberjack::Severity::FATAL, "fatal", "lumberjack_syslog_device_spec", 12345, nil))
+    end
+
+    it "should map unknown severities to LOG_ALERT" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      device.write(Lumberjack::LogEntry.new(Time.now, 100, "custom severity", "lumberjack_syslog_device_spec", 12345, nil))
+      expect(syslog.output).to eq [[Syslog::LOG_ALERT, "custom severity"]]
     end
   end
 end
