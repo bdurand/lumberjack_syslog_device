@@ -36,6 +36,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "lumberjack", ">=2.0"
   spec.add_dependency "syslog"
-
-  spec.add_development_dependency "bundler"
 end
