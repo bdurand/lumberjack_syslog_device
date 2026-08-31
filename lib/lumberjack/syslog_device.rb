@@ -79,9 +79,10 @@ module Lumberjack
       @template = Template.new(@template, attribute_format: attribute_format) if @template.is_a?(String)
 
       @syslog_options = options[:options] || (Syslog::LOG_PID | Syslog::LOG_CONS)
-      @syslog_facility = options[:facility]
+      # Syslog substitutes LOG_USER for a nil facility; normalize here so the
+      # connection reuse check in open_syslog matches what syslog reports back.
+      @syslog_facility = options[:facility] || Syslog::LOG_USER
       @close_connection = options[:close_connection]
-      @syslog_identity = nil
     end
 
     # Write a log entry to syslog.
@@ -90,10 +91,11 @@ module Lumberjack
     # @return [void]
     def write(entry)
       message = @template.call(entry).to_s.chomp.gsub(PERCENT, ESCAPED_PERCENT)
+      severity = SEVERITY_MAP[entry.severity] || Syslog::LOG_ALERT
       @@lock.synchronize do
         syslog = open_syslog(entry.progname)
         begin
-          syslog.log(SEVERITY_MAP[entry.severity], message)
+          syslog.log(severity, message)
         ensure
           syslog.close if @close_connection
         end
@@ -105,8 +107,8 @@ module Lumberjack
     # @return [void]
     def close
       flush
-      @lock.synchronize do
-        @syslog.close if @syslog&.opened?
+      @@lock.synchronize do
+        syslog_implementation.close if syslog_implementation.opened?
       end
     end
 
@@ -118,12 +120,15 @@ module Lumberjack
       syslog_impl = syslog_implementation
       if syslog_impl.opened?
         if (progname.nil? || syslog_impl.ident == progname.to_s) && @syslog_facility == syslog_impl.facility && @syslog_options == syslog_impl.options
+          syslog_impl.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
           return syslog_impl
         else
           syslog_impl.close
         end
       end
-      syslog = syslog_impl.open(progname.to_s, @syslog_options, @syslog_facility)
+      # Pass nil rather than an empty string when there is no progname so that
+      # syslog falls back to the program name for the ident.
+      syslog = syslog_impl.open(progname&.to_s, @syslog_options, @syslog_facility)
       syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
       syslog
     end
