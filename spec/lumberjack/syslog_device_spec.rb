@@ -68,6 +68,16 @@ RSpec.describe Lumberjack::SyslogDevice do
       expect(syslog.open_count).to eq 1
     end
 
+    it "should reset the mask on a reused connection" do
+      device = Lumberjack::SyslogDevice.new
+      allow(device).to receive(:syslog_implementation).and_return(syslog)
+      syslog.open(entry.progname, Syslog::LOG_PID | Syslog::LOG_CONS, Syslog::LOG_USER)
+      syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_ERR)
+      device.write(entry)
+      expect(syslog.mask).to eq(Syslog::LOG_UPTO(Syslog::LOG_DEBUG))
+      expect(syslog.open_count).to eq 1
+    end
+
     it "should reopen the connection when the progname changes" do
       device = Lumberjack::SyslogDevice.new
       allow(device).to receive(:syslog_implementation).and_return(syslog)
